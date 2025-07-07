@@ -1,0 +1,380 @@
+import {
+  users,
+  posts,
+  contactSubmissions,
+  newsletterSubscriptions,
+  comments,
+  tags,
+  postTags,
+  analytics,
+  type User,
+  type UpsertUser,
+  type InsertPost,
+  type Post,
+  type PostWithAuthor,
+  type InsertContactSubmission,
+  type ContactSubmission,
+  type InsertNewsletterSubscription,
+  type NewsletterSubscription,
+  type InsertComment,
+  type Comment,
+  type CommentWithAuthor,
+  type InsertTag,
+  type Tag,
+  type InsertAnalytics,
+  type Analytics,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, ilike, and, sql } from "drizzle-orm";
+
+// Interface for storage operations
+export interface IStorage {
+  // User operations
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  updateUser(id: string, updates: Partial<UpsertUser>): Promise<User | undefined>;
+  
+  // Post operations
+  getAllPosts(): Promise<PostWithAuthor[]>;
+  getPostById(id: number): Promise<PostWithAuthor | undefined>;
+  getPostBySlug(slug: string): Promise<PostWithAuthor | undefined>;
+  getPostsByCategory(category: string): Promise<PostWithAuthor[]>;
+  getPostsByAuthor(authorId: string): Promise<PostWithAuthor[]>;
+  createPost(post: InsertPost): Promise<Post>;
+  updatePost(id: number, updates: Partial<InsertPost>): Promise<Post | undefined>;
+  deletePost(id: number): Promise<boolean>;
+  incrementPostViews(id: number): Promise<void>;
+  
+  // Contact operations
+  createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
+  getAllContactSubmissions(): Promise<ContactSubmission[]>;
+  markContactSubmissionAsRead(id: number): Promise<void>;
+  
+  // Newsletter operations
+  createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
+  getNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
+  unsubscribeFromNewsletter(email: string): Promise<void>;
+  
+  // Comment operations
+  createComment(comment: InsertComment): Promise<Comment>;
+  getCommentsByPost(postId: number): Promise<CommentWithAuthor[]>;
+  approveComment(id: number): Promise<void>;
+  deleteComment(id: number): Promise<boolean>;
+  
+  // Tag operations
+  createTag(tag: InsertTag): Promise<Tag>;
+  getAllTags(): Promise<Tag[]>;
+  getTagBySlug(slug: string): Promise<Tag | undefined>;
+  updateTag(id: number, updates: Partial<InsertTag>): Promise<Tag | undefined>;
+  deleteTag(id: number): Promise<boolean>;
+  
+  // Analytics operations
+  trackEvent(event: InsertAnalytics): Promise<Analytics>;
+  getAnalyticsByEvent(event: string, days?: number): Promise<Analytics[]>;
+  getDashboardStats(): Promise<any>;
+}
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  // (IMPORTANT) these user operations are mandatory for Replit Auth.
+
+  async getUser(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUser(id: string, updates: Partial<UpsertUser>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  // Post operations
+  async getAllPosts(): Promise<PostWithAuthor[]> {
+    return await db
+      .select()
+      .from(posts)
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .orderBy(desc(posts.createdAt))
+      .then(rows => rows.map(row => ({ ...row.posts, author: row.users! })));
+  }
+
+  async getPostById(id: number): Promise<PostWithAuthor | undefined> {
+    const [result] = await db
+      .select()
+      .from(posts)
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .where(eq(posts.id, id));
+    
+    return result ? { ...result.posts, author: result.users! } : undefined;
+  }
+
+  async getPostBySlug(slug: string): Promise<PostWithAuthor | undefined> {
+    const [result] = await db
+      .select()
+      .from(posts)
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .where(eq(posts.slug, slug));
+    
+    return result ? { ...result.posts, author: result.users! } : undefined;
+  }
+
+  async getPostsByCategory(category: string): Promise<PostWithAuthor[]> {
+    return await db
+      .select()
+      .from(posts)
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .where(eq(posts.category, category))
+      .orderBy(desc(posts.createdAt))
+      .then(rows => rows.map(row => ({ ...row.posts, author: row.users! })));
+  }
+
+  async getPostsByAuthor(authorId: string): Promise<PostWithAuthor[]> {
+    return await db
+      .select()
+      .from(posts)
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .where(eq(posts.authorId, authorId))
+      .orderBy(desc(posts.createdAt))
+      .then(rows => rows.map(row => ({ ...row.posts, author: row.users! })));
+  }
+
+  async createPost(post: InsertPost): Promise<Post> {
+    const [newPost] = await db
+      .insert(posts)
+      .values(post)
+      .returning();
+    return newPost;
+  }
+
+  async updatePost(id: number, updates: Partial<InsertPost>): Promise<Post | undefined> {
+    const [post] = await db
+      .update(posts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(posts.id, id))
+      .returning();
+    return post;
+  }
+
+  async deletePost(id: number): Promise<boolean> {
+    const result = await db
+      .delete(posts)
+      .where(eq(posts.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  async incrementPostViews(id: number): Promise<void> {
+    await db
+      .update(posts)
+      .set({ views: sql`${posts.views} + 1` })
+      .where(eq(posts.id, id));
+  }
+
+  // Contact operations
+  async createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission> {
+    const [newSubmission] = await db
+      .insert(contactSubmissions)
+      .values(submission)
+      .returning();
+    return newSubmission;
+  }
+
+  async getAllContactSubmissions(): Promise<ContactSubmission[]> {
+    return await db
+      .select()
+      .from(contactSubmissions)
+      .orderBy(desc(contactSubmissions.createdAt));
+  }
+
+  async markContactSubmissionAsRead(id: number): Promise<void> {
+    await db
+      .update(contactSubmissions)
+      .set({ isRead: true })
+      .where(eq(contactSubmissions.id, id));
+  }
+
+  // Newsletter operations
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    const [newSubscription] = await db
+      .insert(newsletterSubscriptions)
+      .values(subscription)
+      .onConflictDoUpdate({
+        target: newsletterSubscriptions.email,
+        set: { isActive: true },
+      })
+      .returning();
+    return newSubscription;
+  }
+
+  async getNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
+    return await db
+      .select()
+      .from(newsletterSubscriptions)
+      .where(eq(newsletterSubscriptions.isActive, true))
+      .orderBy(desc(newsletterSubscriptions.createdAt));
+  }
+
+  async unsubscribeFromNewsletter(email: string): Promise<void> {
+    await db
+      .update(newsletterSubscriptions)
+      .set({ isActive: false })
+      .where(eq(newsletterSubscriptions.email, email));
+  }
+
+  // Comment operations
+  async createComment(comment: InsertComment): Promise<Comment> {
+    const [newComment] = await db
+      .insert(comments)
+      .values(comment)
+      .returning();
+    return newComment;
+  }
+
+  async getCommentsByPost(postId: number): Promise<CommentWithAuthor[]> {
+    const result = await db
+      .select()
+      .from(comments)
+      .leftJoin(users, eq(comments.authorId, users.id))
+      .where(and(eq(comments.postId, postId), eq(comments.isApproved, true)))
+      .orderBy(desc(comments.createdAt));
+    
+    return result.map(row => ({
+      ...row.comments,
+      author: row.users || undefined
+    }));
+  }
+
+  async approveComment(id: number): Promise<void> {
+    await db
+      .update(comments)
+      .set({ isApproved: true })
+      .where(eq(comments.id, id));
+  }
+
+  async deleteComment(id: number): Promise<boolean> {
+    const result = await db
+      .delete(comments)
+      .where(eq(comments.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Tag operations
+  async createTag(tag: InsertTag): Promise<Tag> {
+    const [newTag] = await db
+      .insert(tags)
+      .values(tag)
+      .returning();
+    return newTag;
+  }
+
+  async getAllTags(): Promise<Tag[]> {
+    return await db
+      .select()
+      .from(tags)
+      .orderBy(desc(tags.createdAt));
+  }
+
+  async getTagBySlug(slug: string): Promise<Tag | undefined> {
+    const [tag] = await db
+      .select()
+      .from(tags)
+      .where(eq(tags.slug, slug));
+    return tag;
+  }
+
+  async updateTag(id: number, updates: Partial<InsertTag>): Promise<Tag | undefined> {
+    const [tag] = await db
+      .update(tags)
+      .set(updates)
+      .where(eq(tags.id, id))
+      .returning();
+    return tag;
+  }
+
+  async deleteTag(id: number): Promise<boolean> {
+    const result = await db
+      .delete(tags)
+      .where(eq(tags.id, id));
+    return result.rowCount !== null && result.rowCount > 0;
+  }
+
+  // Analytics operations
+  async trackEvent(event: InsertAnalytics): Promise<Analytics> {
+    const [newEvent] = await db
+      .insert(analytics)
+      .values(event)
+      .returning();
+    return newEvent;
+  }
+
+  async getAnalyticsByEvent(event: string, days: number = 30): Promise<Analytics[]> {
+    return await db
+      .select()
+      .from(analytics)
+      .where(and(
+        eq(analytics.event, event),
+        sql`${analytics.createdAt} >= NOW() - INTERVAL '${days} days'`
+      ))
+      .orderBy(desc(analytics.createdAt));
+  }
+
+  async getDashboardStats(): Promise<any> {
+    const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
+    const totalPosts = await db.select({ count: sql<number>`count(*)` }).from(posts);
+    const publishedPosts = await db.select({ count: sql<number>`count(*)` }).from(posts).where(eq(posts.isPublished, true));
+    const totalComments = await db.select({ count: sql<number>`count(*)` }).from(comments);
+    const approvedComments = await db.select({ count: sql<number>`count(*)` }).from(comments).where(eq(comments.isApproved, true));
+    const totalSubscribers = await db.select({ count: sql<number>`count(*)` }).from(newsletterSubscriptions).where(eq(newsletterSubscriptions.isActive, true));
+
+    // Get recent views for the last 30 days
+    const recentViews = await db
+      .select({ 
+        date: sql<string>`DATE(${analytics.createdAt})`,
+        views: sql<number>`COUNT(*)`
+      })
+      .from(analytics)
+      .where(and(
+        eq(analytics.event, 'post_view'),
+        sql`${analytics.createdAt} >= NOW() - INTERVAL '30 days'`
+      ))
+      .groupBy(sql`DATE(${analytics.createdAt})`)
+      .orderBy(sql`DATE(${analytics.createdAt}) DESC`)
+      .limit(30);
+
+    return {
+      users: totalUsers[0]?.count || 0,
+      posts: totalPosts[0]?.count || 0,
+      publishedPosts: publishedPosts[0]?.count || 0,
+      comments: totalComments[0]?.count || 0,
+      approvedComments: approvedComments[0]?.count || 0,
+      subscribers: totalSubscribers[0]?.count || 0,
+      recentViews: recentViews || [],
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
