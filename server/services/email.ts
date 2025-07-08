@@ -15,11 +15,11 @@ const transporter = nodemailer.createTransport({
 export async function sendContactEmail(contactData: InsertContactSubmission) {
   const { firstName, lastName, email, subject, message } = contactData;
   
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@adventuresonwheels.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@davefrost.co.uk';
   
   // Email to admin
   const adminEmailOptions = {
-    from: process.env.FROM_EMAIL || 'noreply@adventuresonwheels.com',
+    from: process.env.FROM_EMAIL || 'noreply@davefrost.co.uk',
     to: adminEmail,
     subject: `New Contact Form Submission: ${subject}`,
     html: `
@@ -34,7 +34,7 @@ export async function sendContactEmail(contactData: InsertContactSubmission) {
 
   // Confirmation email to user
   const userEmailOptions = {
-    from: process.env.FROM_EMAIL || 'noreply@adventuresonwheels.com',
+    from: process.env.FROM_EMAIL || 'noreply@davefrost.co.uk',
     to: email,
     subject: 'Thank you for contacting Adventures on Wheels',
     html: `

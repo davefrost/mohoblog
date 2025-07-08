@@ -45,7 +45,7 @@ export default function Home() {
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">Adventures on Wheels</h1>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-            Following our journey across the country in our motorhome, sharing the highs, lows, and everything in between
+            Following our journey with Derek, our motorhome, sharing the highs, lows, and everything in between
           </p>
           <Button 
             size="lg" 
