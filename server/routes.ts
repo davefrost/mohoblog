@@ -1,7 +1,10 @@
+/* File: server/routes.ts */
+import express from 'express';
+import { register, login } from './services/auth';
+import { body, validationResult } from 'express-validator';
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
 import { sendContactEmail } from "./services/email";
 import { handleFileUpload } from "./services/upload";
 import { trackEvent, trackPostView, trackContactForm, trackNewsletterSubscription } from "./services/analytics";
@@ -38,54 +41,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+router.post(
+  '/auth/register',
+  body('email').isEmail(),
+  body('password').isLength({ min: 6 }),
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = await register(req.body.email, req.body.password);
       res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-  });
+  }
+);
 
-  // User management routes
-  app.get('/api/users', isAuthenticated, async (req: any, res) => {
-    try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-      
-      const users = await storage.getAllUsers();
-      res.json(users);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      res.status(500).json({ message: "Failed to fetch users" });
-    }
-  });
-
-  app.patch('/api/users/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const userId = req.params.id;
-      const updates = req.body;
-      
-      const updatedUser = await storage.updateUser(userId, updates);
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      res.json(updatedUser);
-    } catch (error) {
-      console.error("Error updating user:", error);
-      res.status(500).json({ message: "Failed to update user" });
-    }
-  });
+router.post('/auth/login', async (req, res) => {
+  try {
+    const { token } = await login(req.body.email, req.body.password);
+    res.json({ token });
+  } catch (err) {
+    res.status(401).json({ error: err.message });
+  }
+});
 
   // Blog post routes
   app.get('/api/posts', async (req, res) => {
