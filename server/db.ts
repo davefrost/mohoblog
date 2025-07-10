@@ -3,13 +3,17 @@ import { drizzle } from 'drizzle-orm/neon-serverless';
 import ws from "ws";
 import * as schema from "@shared/schema";
 
+// Configure Neon for WebSocket support
 neonConfig.webSocketConstructor = ws;
 
-if (!process.env.DATABASE_URL) {
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
   throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
+    "DATABASE_URL must be set. Please set your database connection string.",
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Use Neon serverless driver (works with both Neon cloud and local PostgreSQL via pooling)
+export const pool = new Pool({ connectionString: databaseUrl });
 export const db = drizzle({ client: pool, schema });

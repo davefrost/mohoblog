@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 export default function Navbar() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -108,16 +108,16 @@ export default function Navbar() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/api/logout"}>
+                  <DropdownMenuItem onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button onClick={() => window.location.href = "/api/login"}>
-                Sign In
-              </Button>
+              <Link href="/auth">
+                <Button>Sign In</Button>
+              </Link>
             )}
 
             {/* Mobile Menu */}
