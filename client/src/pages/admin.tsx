@@ -63,6 +63,11 @@ export default function Admin() {
     enabled: !!user?.isAdmin,
   });
 
+  const { data: users, isLoading: usersLoading } = useQuery({
+    queryKey: ["/api/users"],
+    enabled: !!user?.isAdmin,
+  });
+
   if (isLoading || !user?.isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -281,7 +286,14 @@ export default function Admin() {
                   <Plus className="h-6 w-6 mb-2" />
                   <span>New Post</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => {
+                    // Show users management section
+                    document.getElementById('users-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
                   <Users className="h-6 w-6 mb-2" />
                   <span>Manage Users</span>
                 </Button>
@@ -294,6 +306,109 @@ export default function Admin() {
                   <span>Settings</span>
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Users Management Section */}
+        <div className="mt-8" id="users-section">
+          <Card>
+            <CardHeader>
+              <CardTitle>User Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {usersLoading ? (
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-3">
+                      <div className="h-12 w-12 bg-muted rounded-full animate-pulse"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted rounded w-1/3 animate-pulse"></div>
+                        <div className="h-3 bg-muted rounded w-1/4 animate-pulse"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {users?.map((user: any) => (
+                    <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-primary font-medium">
+                            {user.firstName?.[0]}{user.lastName?.[0]}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-foreground">
+                            {user.firstName} {user.lastName}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">{user.email}</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <Badge variant={user.isAdmin ? "default" : "secondary"} className="text-xs">
+                              {user.isAdmin ? "Admin" : "User"}
+                            </Badge>
+                            <Badge variant={user.isActive ? "default" : "destructive"} className="text-xs">
+                              {user.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              await fetch(`/api/users/${user.id}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ isAdmin: !user.isAdmin }),
+                              });
+                              window.location.reload(); // Simple refresh for now
+                            } catch (error) {
+                              toast({
+                                title: "Error",
+                                description: "Failed to update user",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          {user.isAdmin ? "Remove Admin" : "Make Admin"}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              await fetch(`/api/users/${user.id}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ isActive: !user.isActive }),
+                              });
+                              window.location.reload(); // Simple refresh for now
+                            } catch (error) {
+                              toast({
+                                title: "Error",
+                                description: "Failed to update user",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          {user.isActive ? "Deactivate" : "Activate"}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {users?.length === 0 && (
+                    <p className="text-muted-foreground text-center py-4">
+                      No users found.
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
