@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated } from "./auth";
 import { sendContactEmail } from "./services/email";
 import { handleFileUpload } from "./services/upload";
 import { trackEvent, trackPostView, trackContactForm, trackNewsletterSubscription } from "./services/analytics";
@@ -35,24 +35,14 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Note: Auth routes (login, logout, register, user) are handled in auth.ts
 
   // User management routes
   app.get('/api/users', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -67,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/users/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -106,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/posts/admin', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -160,14 +150,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/posts', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
 
       const postData = insertPostSchema.parse({
         ...req.body,
-        authorId: req.user.claims.sub,
+        authorId: req.user.id,
       });
 
       const post = await storage.createPost(postData);
@@ -183,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/posts/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -205,7 +195,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/posts/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -227,7 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload route
   app.post('/api/upload', isAuthenticated, upload.single('image'), async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -291,7 +281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact submissions management (admin only)
   app.get('/api/contact-submissions', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -306,7 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/contact-submissions/:id/read', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -324,7 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics dashboard route (admin only)
   app.get('/api/analytics/dashboard', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -340,7 +330,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Database maintenance routes (admin only)
   app.post('/api/admin/database/indexes', isAuthenticated, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user.id);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }

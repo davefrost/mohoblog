@@ -11,6 +11,7 @@ import PostDetail from "@/pages/post-detail";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
+import AuthPage from "@/pages/auth";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 
@@ -30,6 +31,7 @@ function Router() {
       <Navbar />
       <main className="flex-1">
         <Switch>
+          <Route path="/auth" component={AuthPage} />
           {!isAuthenticated ? (
             <Route path="/" component={Landing} />
           ) : (
