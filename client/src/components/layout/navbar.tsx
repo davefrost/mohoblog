@@ -91,12 +91,13 @@ export default function Navbar() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="px-2 py-1.5 text-sm font-medium">
                     {user.firstName} {user.lastName}
+                    {user.isAdmin && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Admin</span>}
                   </div>
                   <div className="px-2 py-1.5 text-xs text-muted-foreground">
                     {user.email}
                   </div>
                   <div className="border-t my-1" />
-                  {user.isAdmin && (
+                  {user.isAdmin === true && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin">
                         <Shield className="mr-2 h-4 w-4" />
