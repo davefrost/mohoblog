@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,10 +17,13 @@ import {
   BarChart3
 } from "lucide-react";
 import type { PostWithAuthor, ContactSubmission } from "@shared/schema";
+import PostEditor from "@/components/blog/post-editor";
 
 export default function Admin() {
   const { toast } = useToast();
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [isPostEditorOpen, setIsPostEditorOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<PostWithAuthor | null>(null);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -149,7 +152,13 @@ export default function Admin() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Recent Posts</span>
-                <Button size="sm">
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    setEditingPost(null);
+                    setIsPostEditorOpen(true);
+                  }}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   New Post
                 </Button>
@@ -186,7 +195,14 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingPost(post);
+                            setIsPostEditorOpen(true);
+                          }}
+                        >
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="text-destructive">
@@ -281,6 +297,16 @@ export default function Admin() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Post Editor Dialog */}
+        <PostEditor
+          isOpen={isPostEditorOpen}
+          onClose={() => {
+            setIsPostEditorOpen(false);
+            setEditingPost(null);
+          }}
+          editingPost={editingPost}
+        />
       </div>
     </div>
   );
