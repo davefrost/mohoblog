@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 
 export default function Navbar() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -78,7 +78,7 @@ export default function Navbar() {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
-            {isAuthenticated && user ? (
+            {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -108,16 +108,18 @@ export default function Navbar() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/api/logout"}>
+                  <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button onClick={() => window.location.href = "/api/login"}>
-                Sign In
-              </Button>
+              <Link href="/auth">
+                <Button>
+                  Sign In
+                </Button>
+              </Link>
             )}
 
             {/* Mobile Menu */}
