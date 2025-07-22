@@ -14,6 +14,8 @@ import multer from "multer";
 import path from "path";
 import { setupAuth } from "./replitAuth.ts";
 import { Router } from "express";
+import { isAuthenticated } from "./replitAuth.ts"
+
 
 const router = Router();
 
