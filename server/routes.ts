@@ -12,6 +12,12 @@ import { insertPostSchema, insertContactSubmissionSchema, insertNewsletterSubscr
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
+import { setupAuth } from "./replitAuth.ts";
+import { Router } from "express";
+
+const router = Router();
+
+
 
 // Configure multer for file uploads
 const upload = multer({
@@ -85,7 +91,7 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.get('/api/posts/admin', isAuthenticated, async (req: any, res) => {
+  app.get('/api/posts/admin', async(req, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -139,7 +145,7 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.post('/api/posts', isAuthenticated, async (req: any, res) => {
+  app.post('/api/posts', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -162,7 +168,7 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.patch('/api/posts/:id', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/posts/:id', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -184,7 +190,7 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.delete('/api/posts/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/posts/:id', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -206,7 +212,7 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // File upload route
-  app.post('/api/upload', isAuthenticated, upload.single('image'), async (req: any, res) => {
+  app.post('/api/upload', upload.single('image'), async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -270,7 +276,7 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Contact submissions management (admin only)
-  app.get('/api/contact-submissions', isAuthenticated, async (req: any, res) => {
+  app.get('/api/contact-submissions', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -285,7 +291,7 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.patch('/api/contact-submissions/:id/read', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/contact-submissions/:id/read', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -303,7 +309,7 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Analytics dashboard route (admin only)
-  app.get('/api/analytics/dashboard', isAuthenticated, async (req: any, res) => {
+  app.get('/api/analytics/dashboard', async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
@@ -319,7 +325,7 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Database maintenance routes (admin only)
-  app.post('/api/admin/database/indexes', isAuthenticated, async (req: any, res) => {
+  app.post('/api/admin/database/indexes',  async (req: any, res) => {
     try {
       const currentUser = await storage.getUser(req.user.claims.sub);
       if (!currentUser?.isAdmin) {
