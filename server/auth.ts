@@ -49,7 +49,7 @@ export function setupAuth(app: Express) {
     }
   };
 
-  app.set("trust proxy", 1);
+  app.set("trust proxy", 0);
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());
