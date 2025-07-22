@@ -61,8 +61,8 @@ router.post(
     try {
       const user = await register(req.body.email, req.body.password);
       res.json(user);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message || 'Registration failed' });
     }
   }
 );
@@ -71,8 +71,8 @@ router.post('/auth/login', async (req, res) => {
   try {
     const { token } = await login(req.body.email, req.body.password);
     res.json({ token });
-  } catch (err) {
-    res.status(401).json({ error: err.message });
+  } catch (err: any) {
+    res.status(401).json({ error: err?.message || 'Login failed' });
   }
 });
 
@@ -95,7 +95,7 @@ router.post('/auth/login', async (req, res) => {
 
   app.get('/api/posts/admin', async(req, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser((req.user as any)?.id || (req.user as any)?.claims?.sub);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
@@ -149,14 +149,15 @@ router.post('/auth/login', async (req, res) => {
 
   app.post('/api/posts', async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const userId = req.user?.id || req.user?.claims?.sub;
+      const currentUser = await storage.getUser(userId);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
 
       const postData = insertPostSchema.parse({
         ...req.body,
-        authorId: req.user.claims.sub,
+        authorId: userId,
       });
 
       const post = await storage.createPost(postData);
@@ -172,7 +173,7 @@ router.post('/auth/login', async (req, res) => {
 
   app.patch('/api/posts/:id', async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
+      const currentUser = await storage.getUser(req.user?.id || req.user?.claims?.sub);
       if (!currentUser?.isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
