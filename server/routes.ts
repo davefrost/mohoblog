@@ -1,6 +1,6 @@
 /* File: server/routes.ts */
 import express from 'express';
-import { register, login } from './services/auth';
+// Auth is now handled in server/auth.ts
 import { body, validationResult } from 'express-validator';
 import type { Express } from "express";
 import { createServer, type Server } from "http";
@@ -12,9 +12,8 @@ import { insertPostSchema, insertContactSubmissionSchema, insertNewsletterSubscr
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
-import { setupAuth } from "./replitAuth.ts";
+import { setupAuth, requireAuth, requireAdmin } from "./auth";
 import { Router } from "express";
-import { isAuthenticated } from "./replitAuth.ts"
 
 
 const router = Router();
@@ -46,35 +45,9 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
-  // Auth routes
-router.post(
-  '/auth/register',
-  body('email').isEmail(),
-  body('password').isLength({ min: 6 }),
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    try {
-      const user = await register(req.body.email, req.body.password);
-      res.json(user);
-    } catch (err: any) {
-      res.status(500).json({ error: err?.message || 'Registration failed' });
-    }
-  }
-);
-
-router.post('/auth/login', async (req, res) => {
-  try {
-    const { token } = await login(req.body.email, req.body.password);
-    res.json({ token });
-  } catch (err: any) {
-    res.status(401).json({ error: err?.message || 'Login failed' });
-  }
-});
+  // Auth routes are now handled in setupAuth() in server/auth.ts
 
   // Blog post routes
   app.get('/api/posts', async (req, res) => {
@@ -93,12 +66,8 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.get('/api/posts/admin', async(req, res) => {
+  app.get('/api/posts/admin', requireAdmin, async(req, res) => {
     try {
-      const currentUser = await storage.getUser((req.user as any)?.id || (req.user as any)?.claims?.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const posts = await storage.getAllPosts();
       res.json(posts);
@@ -147,17 +116,11 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.post('/api/posts', async (req: any, res) => {
+  app.post('/api/posts', requireAdmin, async (req: any, res) => {
     try {
-      const userId = req.user?.id || req.user?.claims?.sub;
-      const currentUser = await storage.getUser(userId);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const postData = insertPostSchema.parse({
         ...req.body,
-        authorId: userId,
+        authorId: req.user.id,
       });
 
       const post = await storage.createPost(postData);
@@ -171,12 +134,8 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.patch('/api/posts/:id', async (req: any, res) => {
+  app.patch('/api/posts/:id', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user?.id || req.user?.claims?.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const postId = parseInt(req.params.id);
       const updates = req.body;
@@ -193,12 +152,8 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.delete('/api/posts/:id', async (req: any, res) => {
+  app.delete('/api/posts/:id', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const postId = parseInt(req.params.id);
       const deleted = await storage.deletePost(postId);
@@ -215,12 +170,8 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // File upload route
-  app.post('/api/upload', upload.single('image'), async (req: any, res) => {
+  app.post('/api/upload', requireAdmin, upload.single('image'), async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -279,12 +230,8 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Contact submissions management (admin only)
-  app.get('/api/contact-submissions', async (req: any, res) => {
+  app.get('/api/contact-submissions', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const submissions = await storage.getAllContactSubmissions();
       res.json(submissions);
@@ -294,12 +241,8 @@ router.post('/auth/login', async (req, res) => {
     }
   });
 
-  app.patch('/api/contact-submissions/:id/read', async (req: any, res) => {
+  app.patch('/api/contact-submissions/:id/read', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const submissionId = parseInt(req.params.id);
       await storage.markContactSubmissionAsRead(submissionId);
@@ -312,12 +255,8 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Analytics dashboard route (admin only)
-  app.get('/api/analytics/dashboard', async (req: any, res) => {
+  app.get('/api/analytics/dashboard', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const dashboard = await storage.getDashboardStats();
       res.json(dashboard);
@@ -328,12 +267,8 @@ router.post('/auth/login', async (req, res) => {
   });
 
   // Database maintenance routes (admin only)
-  app.post('/api/admin/database/indexes',  async (req: any, res) => {
+  app.post('/api/admin/database/indexes', requireAdmin, async (req: any, res) => {
     try {
-      const currentUser = await storage.getUser(req.user.claims.sub);
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const { createPerformanceIndexes } = await import('./utils/database');
       const results = await createPerformanceIndexes();

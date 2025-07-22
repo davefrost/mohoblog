@@ -1,22 +1,37 @@
-import { Navigate } from 'react-router-dom';
-import { useAuthContext } from '../hooks/AuthContext';
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2 } from "lucide-react";
+import { Redirect, Route } from "wouter";
 
-export const ProtectedRoute = ({ children }) => {
-  const { token } = useAuthContext();
-  if (!token) return <Navigate to="/login" replace />;
-  return children;
-};
+export function ProtectedRoute({
+  path,
+  component: Component,
+}: {
+  path: string;
+  component: () => React.JSX.Element;
+}) {
+  const { user, isLoading } = useAuth();
 
-/* Usage in client/src/main.tsx or App.tsx */
-// import { AuthProvider } from './hooks/AuthContext';
-// <AuthProvider>
-//   <BrowserRouter>
-//     <Routes>
-//       <Route path="/dashboard" element={
-//         <ProtectedRoute>
-//           <DashboardPage />
-//         </ProtectedRoute>
-//       } />
-//     </Routes>
-//   </BrowserRouter>
-// </AuthProvider>
+  if (isLoading) {
+    return (
+      <Route path={path}>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-border" />
+        </div>
+      </Route>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Route path={path}>
+        <Redirect to="/auth" />
+      </Route>
+    );
+  }
+
+  return (
+    <Route path={path}>
+      <Component />
+    </Route>
+  );
+}
