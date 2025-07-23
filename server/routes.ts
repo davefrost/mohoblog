@@ -279,6 +279,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User profile management routes
+  app.patch('/api/user/profile', requireAuth, async (req: any, res) => {
+    try {
+      const { firstName, lastName, email } = req.body;
+      const userId = req.user.id;
+
+      // Basic validation
+      if (!firstName || !lastName || !email) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+
+      const updatedUser = await storage.updateUserProfile(userId, {
+        firstName,
+        lastName,
+        email,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ 
+        message: "Profile updated successfully",
+        user: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          isAdmin: updatedUser.isAdmin
+        }
+      });
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  app.patch('/api/user/password', requireAuth, async (req: any, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      const userId = req.user.id;
+
+      // Basic validation
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Current password and new password are required" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      }
+
+      // Get current user to verify password
+      const user = await storage.getUser(userId);
+      if (!user || !user.passwordHash) {
+        return res.status(404).json({ message: "User not found or no password set" });
+      }
+
+      // Verify current password
+      const bcrypt = await import('bcryptjs');
+      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const newPasswordHash = await bcrypt.hash(newPassword, 12);
+
+      // Update password
+      const success = await storage.changeUserPassword(userId, newPasswordHash);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      res.json({ message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -11,9 +11,11 @@ import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
 import AuthPage from "@/pages/auth-page";
+import Settings from "@/pages/settings";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AdminRoute } from "./components/AdminRoute";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -37,6 +39,7 @@ function Router() {
           <Route path="/contact" component={Contact} />
           <Route path="/auth" component={AuthPage} />
           <AdminRoute path="/admin" component={Admin} />
+          <ProtectedRoute path="/settings" component={Settings} />
           <Route component={NotFound} />
         </Switch>
       </main>

@@ -35,6 +35,8 @@ export interface IStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
   updateUser(id: string, updates: Partial<UpsertUser>): Promise<User | undefined>;
+  updateUserProfile(id: string, updates: { firstName?: string; lastName?: string; email?: string }): Promise<User | undefined>;
+  changeUserPassword(id: string, newPasswordHash: string): Promise<boolean>;
   
   // Post operations
   getAllPosts(): Promise<PostWithAuthor[]>;
@@ -111,6 +113,31 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async updateUserProfile(id: string, updates: { firstName?: string; lastName?: string; email?: string }): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        firstName: updates.firstName,
+        lastName: updates.lastName,
+        email: updates.email,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async changeUserPassword(id: string, newPasswordHash: string): Promise<boolean> {
+    const result = await db
+      .update(users)
+      .set({ 
+        passwordHash: newPasswordHash,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, id));
+    return (result.rowCount || 0) > 0;
   }
 
   // Post operations

@@ -104,9 +104,11 @@ export default function Navbar() {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
                     <LogOut className="mr-2 h-4 w-4" />
