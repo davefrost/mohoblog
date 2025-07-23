@@ -130,6 +130,7 @@ Adventures on Wheels is a full-stack blog application built for motorhome enthus
 - July 07, 2025. Initial setup with basic blog functionality
 - July 07, 2025. Enhanced PostgreSQL database with password hashing, analytics, comments, and advanced features
 - July 22, 2025. Fixed authentication system bugs: corrected import paths, React hooks errors, and navbar routing. Local authentication now fully functional.
+- July 23, 2025. Fixed database connection issues for local deployment: replaced Neon serverless driver with standard pg driver to connect to local PostgreSQL instead of trying WebSocket connections on port 443.
 
 ## User Preferences
 
