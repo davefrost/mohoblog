@@ -3,6 +3,7 @@ import {
   useQuery,
   useMutation,
   UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { apiRequest, queryClient } from "../lib/queryClient";
@@ -15,6 +16,7 @@ type AuthContextType = {
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, RegisterData>;
+  refreshUser: () => void;
 };
 
 type LoginData = {
@@ -33,6 +35,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const {
     data: user,
@@ -144,6 +147,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const refreshUser = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+  };
+
   return React.createElement(
     AuthContext.Provider,
     {
@@ -154,6 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
+        refreshUser,
       },
     },
     children

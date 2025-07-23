@@ -10,7 +10,7 @@ import PostDetail from "@/pages/post-detail";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
-
+import Login from "@/pages/login";
 import Settings from "@/pages/settings";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -37,7 +37,7 @@ function Router() {
           <Route path="/post/:slug" component={PostDetail} />
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
-          <Route path="/auth" component={() => { window.location.href = '/api/login'; return null; }} />
+          <Route path="/login" component={Login} />
           <AdminRoute path="/admin" component={Admin} />
           <ProtectedRoute path="/settings" component={Settings} />
           <Route component={NotFound} />

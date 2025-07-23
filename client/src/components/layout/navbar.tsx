@@ -117,7 +117,7 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth">
+              <Link href="/login">
                 <Button>
                   Sign In
                 </Button>
