@@ -222,124 +222,124 @@ export default function Admin() {
         {/* Tab Content */}
         {activeTab === 'dashboard' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Posts Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span>Recent Posts</span>
-                  <Button size="sm" onClick={handleNewPost}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Post
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {postsLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="flex items-center space-x-3">
-                        <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
-                        <div className="h-4 bg-muted rounded w-16 animate-pulse"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {posts?.slice(0, 5).map((post) => (
-                      <div key={post.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-foreground line-clamp-1">
-                            {post.title}
-                          </h3>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <Badge 
-                              variant={post.isPublished ? "default" : "secondary"}
-                              className="text-xs"
-                            >
-                              {post.isPublished ? "Published" : "Draft"}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              {post.views} views
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleEditPost(post)}
-                            className="text-blue-600 hover:text-blue-800"
+          {/* Posts Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Recent Posts</span>
+                <Button size="sm" onClick={handleNewPost}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Post
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {postsLoading ? (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center space-x-3">
+                      <div className="h-4 bg-muted rounded w-1/2 animate-pulse"></div>
+                      <div className="h-4 bg-muted rounded w-16 animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {posts?.slice(0, 5).map((post) => (
+                    <div key={post.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-foreground line-clamp-1">
+                          {post.title}
+                        </h3>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <Badge 
+                            variant={post.isPublished ? "default" : "secondary"}
+                            className="text-xs"
                           >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => handleDeletePost(post.id)}
-                            className="text-destructive hover:text-red-800"
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                            {post.isPublished ? "Published" : "Draft"}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {post.views} views
+                          </span>
                         </div>
                       </div>
-                    ))}
-                    {posts?.length === 0 && (
-                      <p className="text-muted-foreground text-center py-4">
-                        No posts yet. Create your first post!
-                      </p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleEditPost(post)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDeletePost(post.id)}
+                          className="text-destructive hover:text-red-800"
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {posts?.length === 0 && (
+                    <p className="text-muted-foreground text-center py-4">
+                      No posts yet. Create your first post!
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-            {/* Contact Messages */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Messages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {contactLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="space-y-2">
-                        <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
-                        <div className="h-3 bg-muted rounded w-1/2 animate-pulse"></div>
+          {/* Contact Messages */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Messages</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {contactLoading ? (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-4 bg-muted rounded w-3/4 animate-pulse"></div>
+                      <div className="h-3 bg-muted rounded w-1/2 animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {contactSubmissions?.slice(0, 5).map((submission) => (
+                    <div key={submission.id} className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-medium text-foreground">
+                          {submission.firstName} {submission.lastName}
+                        </h3>
+                        {!submission.isRead && (
+                          <Badge variant="destructive" className="text-xs">
+                            New
+                          </Badge>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {contactSubmissions?.slice(0, 5).map((submission) => (
-                      <div key={submission.id} className="p-3 border rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-medium text-foreground">
-                            {submission.firstName} {submission.lastName}
-                          </h3>
-                          {!submission.isRead && (
-                            <Badge variant="destructive" className="text-xs">
-                              New
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {submission.subject}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(submission.createdAt!).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))}
-                    {contactSubmissions?.length === 0 && (
-                      <p className="text-muted-foreground text-center py-4">
-                        No messages yet.
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {submission.subject}
                       </p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {new Date(submission.createdAt!).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                  {contactSubmissions?.length === 0 && (
+                    <p className="text-muted-foreground text-center py-4">
+                      No messages yet.
+                    </p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
           </div>
         )}
 

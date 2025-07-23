@@ -282,6 +282,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User management routes (admin only)
+  app.get('/api/users', requireAdmin, async (req: any, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      // Remove password hashes from response
+      const safeUsers = users.map(user => ({
+        ...user,
+        passwordHash: undefined
+      }));
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.post('/api/users', requireAdmin, async (req: any, res) => {
+    try {
+      const { firstName, lastName, email, password, isAdmin, isActive } = req.body;
+      
+      if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      // Check if user already exists
+      const users = await storage.getAllUsers();
+      const existingUser = users.find(u => u.email === email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+
+      // Hash password
+      const { hashPassword } = await import("./auth");
+      const hashedPassword = await hashPassword(password);
+
+      const user = await storage.upsertUser({
+        id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        email,
+        firstName,
+        lastName,
+        passwordHash: hashedPassword,
+        isAdmin: isAdmin || false,
+        isActive: isActive !== false
+      });
+
+      res.status(201).json({
+        ...user,
+        passwordHash: undefined
+      });
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  app.patch('/api/users/:id', requireAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const updatedUser = await storage.updateUser(id, updates);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        ...updatedUser,
+        passwordHash: undefined
+      });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  app.delete('/api/users/:id', requireAdmin, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Prevent deleting self
+      if (id === req.user.id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // For now, we'll just mark as inactive instead of actual deletion
+      // to preserve data integrity
+      await storage.updateUser(id, { isActive: false });
+      
+      res.json({ message: "User deactivated successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // User profile management routes
   app.patch('/api/user/profile', requireAuth, async (req: any, res) => {
     try {

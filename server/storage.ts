@@ -370,36 +370,82 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getDashboardStats(): Promise<any> {
-    const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
     const totalPosts = await db.select({ count: sql<number>`count(*)` }).from(posts);
-    const publishedPosts = await db.select({ count: sql<number>`count(*)` }).from(posts).where(eq(posts.isPublished, true));
-    const totalComments = await db.select({ count: sql<number>`count(*)` }).from(comments);
-    const approvedComments = await db.select({ count: sql<number>`count(*)` }).from(comments).where(eq(comments.isApproved, true));
-    const totalSubscribers = await db.select({ count: sql<number>`count(*)` }).from(newsletterSubscriptions).where(eq(newsletterSubscriptions.isActive, true));
-
-    // Get recent views for the last 30 days
-    const recentViews = await db
-      .select({ 
+    const totalUsers = await db.select({ count: sql<number>`count(*)` }).from(users);
+    const totalContacts = await db.select({ count: sql<number>`count(*)` }).from(contactSubmissions);
+    
+    // Get total views
+    const totalViewsResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(analytics)
+      .where(eq(analytics.event, 'post_view'));
+    
+    // Get daily views for the last 30 days
+    const dailyViews = await db
+      .select({
         date: sql<string>`DATE(${analytics.createdAt})`,
-        views: sql<number>`COUNT(*)`
+        views: sql<number>`count(*)`
       })
       .from(analytics)
-      .where(and(
-        eq(analytics.event, 'post_view'),
-        sql`${analytics.createdAt} >= NOW() - INTERVAL '30 days'`
-      ))
+      .where(
+        and(
+          eq(analytics.event, 'post_view'),
+          sql`${analytics.createdAt} >= NOW() - INTERVAL '30 days'`
+        )
+      )
       .groupBy(sql`DATE(${analytics.createdAt})`)
       .orderBy(sql`DATE(${analytics.createdAt}) DESC`)
       .limit(30);
 
+    // Get top posts by views
+    const topPosts = await db
+      .select({
+        title: posts.title,
+        slug: posts.slug,
+        views: posts.views
+      })
+      .from(posts)
+      .where(eq(posts.isPublished, true))
+      .orderBy(desc(posts.views))
+      .limit(10);
+
+    // Get category breakdown
+    const categoryBreakdown = await db
+      .select({
+        category: posts.category,
+        count: sql<number>`count(*)`
+      })
+      .from(posts)
+      .where(eq(posts.isPublished, true))
+      .groupBy(posts.category)
+      .orderBy(desc(sql<number>`count(*)`));
+
+    // Get recent activity
+    const recentActivity = await db
+      .select({
+        event: analytics.event,
+        timestamp: analytics.createdAt,
+        details: analytics.metadata
+      })
+      .from(analytics)
+      .orderBy(desc(analytics.createdAt))
+      .limit(20);
+
     return {
-      users: totalUsers[0]?.count || 0,
-      posts: totalPosts[0]?.count || 0,
-      publishedPosts: publishedPosts[0]?.count || 0,
-      comments: totalComments[0]?.count || 0,
-      approvedComments: approvedComments[0]?.count || 0,
-      subscribers: totalSubscribers[0]?.count || 0,
-      recentViews: recentViews || [],
+      totalPosts: totalPosts[0]?.count || 0,
+      totalUsers: totalUsers[0]?.count || 0,
+      totalContacts: totalContacts[0]?.count || 0,
+      totalViews: totalViewsResult[0]?.count || 0,
+      dailyViews: dailyViews.reverse(),
+      topPosts: topPosts || [],
+      categoryBreakdown: categoryBreakdown || [],
+      recentActivity: (recentActivity || []).map(activity => ({
+        event: activity.event,
+        timestamp: activity.timestamp,
+        details: typeof activity.details === 'object' 
+          ? JSON.stringify(activity.details) 
+          : activity.details || 'No details'
+      }))
     };
   }
 }
