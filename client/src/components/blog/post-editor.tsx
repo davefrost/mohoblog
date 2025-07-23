@@ -16,6 +16,7 @@ import { insertPostSchema, POST_CATEGORIES } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { InsertPost, PostWithAuthor } from "@shared/schema";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -274,13 +275,13 @@ export default function PostEditor({ isOpen, onClose, editingPost }: PostEditorP
 
           <div>
             <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              {...form.register("content")}
-              className="mt-1"
-              rows={12}
-              placeholder="Write your adventure story here..."
-            />
+            <div className="mt-1">
+              <RichTextEditor
+                content={form.watch("content") || ""}
+                onChange={(content) => form.setValue("content", content)}
+                placeholder="Write your adventure story here..."
+              />
+            </div>
             {form.formState.errors.content && (
               <p className="text-sm text-destructive mt-1">
                 {form.formState.errors.content.message}

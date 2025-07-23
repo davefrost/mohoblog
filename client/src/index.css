@@ -135,3 +135,70 @@
 .prose-content code {
   @apply bg-muted px-2 py-1 rounded text-sm;
 }
+
+/* Rich Text Editor Content Styling */
+.ProseMirror {
+  @apply prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4;
+  font-family: inherit;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-muted-foreground;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror p {
+  @apply mb-3;
+}
+
+.ProseMirror h1 {
+  @apply text-2xl font-bold mt-6 mb-4;
+}
+
+.ProseMirror h2 {
+  @apply text-xl font-semibold mt-5 mb-3;
+}
+
+.ProseMirror h3 {
+  @apply text-lg font-medium mt-4 mb-2;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  @apply my-3 pl-6;
+}
+
+.ProseMirror li {
+  @apply mb-1;
+}
+
+.ProseMirror blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground my-4 bg-muted py-2 rounded-r;
+}
+
+.ProseMirror pre {
+  @apply bg-muted p-3 rounded-lg overflow-x-auto my-3 text-sm;
+}
+
+.ProseMirror code {
+  @apply bg-muted px-2 py-1 rounded text-sm;
+}
+
+.ProseMirror strong {
+  @apply font-bold;
+}
+
+.ProseMirror em {
+  @apply italic;
+}
+
+.ProseMirror u {
+  @apply underline;
+}
+
+.ProseMirror s {
+  @apply line-through;
+}
