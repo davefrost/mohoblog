@@ -112,23 +112,11 @@ export default function About() {
               <Card>
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
-                    <Badge className="mr-3">2021</Badge>
+                    <Badge className="mr-3">2023</Badge>
                     <h3 className="text-xl font-semibold">The Big Decision</h3>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    After years of dreaming about life on the road, we finally took the plunge. We sold our house, downsized our belongings, and purchased our first motorhome. It was scary, exciting, and liberating all at once.
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-4">
-                    <Badge className="mr-3">2022</Badge>
-                    <h3 className="text-xl font-semibold">First Year Adventures</h3>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Our first year was a whirlwind of discovery. We learned about RV maintenance the hard way, found our favorite camping spots, and started documenting our journey. Max adapted quickly to life on the road, becoming our best travel companion.
+                    After hours of dreaming about life on the road, we finally took the plunge and purchased our first camper-van. It was rusty, falling apart, but liberating all at once.
                   </p>
                 </CardContent>
               </Card>
@@ -137,10 +125,10 @@ export default function About() {
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
                     <Badge className="mr-3">2023</Badge>
-                    <h3 className="text-xl font-semibold">Building Community</h3>
+                    <h3 className="text-xl font-semibold">First Year Adventures</h3>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    We started this blog to share our experiences and connect with other travelers. The response has been incredible, and we've made lifelong friends through our shared love of adventure and the open road.
+                    Our first year was a whirlwind of discovery. We learned about our relationship being cooped up in a small spac, discovered that both our backs weren't built for constantly stooping, and cooking outside in the rain isn't fun.
                   </p>
                 </CardContent>
               </Card>
@@ -149,10 +137,22 @@ export default function About() {
                 <CardContent className="p-8">
                   <div className="flex items-center mb-4">
                     <Badge className="mr-3">2024</Badge>
+                    <h3 className="text-xl font-semibold">Building Community</h3>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                   With all of the above in mind, and our adoption of Brooke towards the end or 2023 we upgraded to a proper motorhome in time for the new season.  Having little idea of what to look for, we relied on previous mot history, the seller, and some basic damp checks before parting with our cash, and aside from a few small technical hitches, had a great summer (and winter) adventuring with the dog.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-8">
+                  <div className="flex items-center mb-4">
+                    <Badge className="mr-3">2025</Badge>
                     <h3 className="text-xl font-semibold">The Journey Continues</h3>
                   </div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Now in our third year, we're still discovering new places, meeting amazing people, and learning valuable lessons. This blog has become more than just a travel diary—it's a way to inspire others to pursue their own adventures.
+                    Now in our second year with 'Derek' the Ducato based motorhome, we're still discovering new places, meeting amazing people, and learning valuable lessons. This blog was started as more than just a travel diary—it's a way to inspire others to pursue their own adventures with some stark reminders of sometimes costly things that can go wrong.
                   </p>
                 </CardContent>
               </Card>
