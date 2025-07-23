@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,35 +19,7 @@ import type { PostWithAuthor, ContactSubmission } from "@shared/schema";
 
 export default function Admin() {
   const { toast } = useToast();
-  const { user, isAuthenticated, isLoading } = useAuth();
-
-  // Redirect to home if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Check if user is admin
-  useEffect(() => {
-    if (user && !user.isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      });
-      window.location.href = "/";
-      return;
-    }
-  }, [user, toast]);
+  const { user, isLoading } = useAuth();
 
   const { data: posts, isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/admin"],

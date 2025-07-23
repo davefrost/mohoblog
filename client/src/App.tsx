@@ -13,7 +13,7 @@ import Admin from "@/pages/admin";
 import AuthPage from "@/pages/auth-page";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AdminRoute } from "./components/AdminRoute";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -36,7 +36,7 @@ function Router() {
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
           <Route path="/auth" component={AuthPage} />
-          <ProtectedRoute path="/admin" component={Admin} />
+          <AdminRoute path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>
