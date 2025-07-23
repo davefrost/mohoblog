@@ -17,24 +17,24 @@ Adventures on Wheels is a full-stack blog application built for motorhome enthus
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js
-- **Database**: PostgreSQL with Neon serverless driver
+- **Database**: PostgreSQL with local database running on same server as application
 - **ORM**: Drizzle ORM with schema-first approach
-- **Authentication**: Replit Auth with OpenID Connect
+- **Authentication**: OpenID Connect
 - **Session Management**: Express sessions with PostgreSQL store
 - **File Uploads**: Multer for handling image uploads
 - **Email Service**: Nodemailer for contact form submissions
 
 ## Key Components
 
-### Database Schema
-- **Users**: Stores user profiles (mandatory for Replit Auth)
+### Database Schema (Initial)
+- **Users**: Stores user profiles and permissions
 - **Posts**: Blog posts with categories, content, and metadata
 - **Contact Submissions**: Form submissions from visitors
 - **Newsletter Subscriptions**: Email subscriptions
 - **Sessions**: Authentication session storage
 
 ### Authentication System
-- Replit Auth integration with OpenID Connect
+- OpenID Connect
 - Admin role management for content creation
 - Protected routes for administrative functions
 - Session persistence with PostgreSQL
@@ -54,7 +54,7 @@ Adventures on Wheels is a full-stack blog application built for motorhome enthus
 
 ## Data Flow
 
-1. **User Authentication**: Replit Auth → Session Storage → User Management
+1. **User Authentication**: Auth → Session Storage → User Management
 2. **Content Creation**: Admin UI → Form Validation → Database Storage
 3. **Content Display**: Database Query → API Response → React Components
 4. **File Uploads**: Multer → Local Storage → Database Reference
