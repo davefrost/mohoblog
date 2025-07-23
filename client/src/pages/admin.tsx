@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Plus, 
   FileText, 
@@ -16,10 +18,14 @@ import {
   BarChart3
 } from "lucide-react";
 import type { PostWithAuthor, ContactSubmission } from "@shared/schema";
+import PostEditor from "@/components/blog/post-editor";
 
 export default function Admin() {
   const { toast } = useToast();
   const { user, isLoading } = useAuth();
+  const queryClient = useQueryClient();
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<PostWithAuthor | null>(null);
 
   const { data: posts, isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/admin"],
@@ -30,6 +36,47 @@ export default function Admin() {
     queryKey: ["/api/contact-submissions"],
     enabled: !!user?.isAdmin,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (postId: number) => {
+      return apiRequest("DELETE", `/api/posts/${postId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/admin"] });
+      toast({
+        title: "Success",
+        description: "Post deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete post",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEditPost = (post: PostWithAuthor) => {
+    setEditingPost(post);
+    setIsEditorOpen(true);
+  };
+
+  const handleDeletePost = (postId: number) => {
+    if (confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+      deleteMutation.mutate(postId);
+    }
+  };
+
+  const handleNewPost = () => {
+    setEditingPost(null);
+    setIsEditorOpen(true);
+  };
+
+  const handleCloseEditor = () => {
+    setEditingPost(null);
+    setIsEditorOpen(false);
+  };
 
   if (isLoading || !user?.isAdmin) {
     return (
@@ -120,7 +167,7 @@ export default function Admin() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>Recent Posts</span>
-                <Button size="sm">
+                <Button size="sm" onClick={handleNewPost}>
                   <Plus className="h-4 w-4 mr-2" />
                   New Post
                 </Button>
@@ -157,10 +204,21 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleEditPost(post)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
                           <Edit2 className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleDeletePost(post.id)}
+                          className="text-destructive hover:text-red-800"
+                          disabled={deleteMutation.isPending}
+                        >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -232,7 +290,11 @@ export default function Admin() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={handleNewPost}
+                >
                   <Plus className="h-6 w-6 mb-2" />
                   <span>New Post</span>
                 </Button>
@@ -253,6 +315,13 @@ export default function Admin() {
           </Card>
         </div>
       </div>
+
+      {/* Post Editor Modal */}
+      <PostEditor
+        isOpen={isEditorOpen}
+        onClose={handleCloseEditor}
+        editingPost={editingPost}
+      />
     </div>
   );
 }
