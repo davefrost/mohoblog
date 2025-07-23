@@ -44,6 +44,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve uploaded files statically
+  app.use('/uploads', express.static('uploads'));
+  
   // Auth middleware
   setupAuth(app);
 

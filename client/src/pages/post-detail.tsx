@@ -152,8 +152,12 @@ export default function PostDetail() {
           )}
           
           <div 
-            className="text-foreground leading-relaxed"
+            className="text-foreground leading-relaxed prose-content"
             dangerouslySetInnerHTML={{ __html: post.content }}
+            style={{
+              lineHeight: '1.8',
+              fontSize: '1.1rem'
+            }}
           />
         </div>
 

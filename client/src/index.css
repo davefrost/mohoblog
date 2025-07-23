@@ -93,3 +93,45 @@
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--foreground));
 }
+
+/* Enhanced content styling for posts */
+.prose-content img {
+  @apply rounded-lg shadow-md w-full h-auto my-6 max-w-full;
+}
+
+.prose-content p {
+  @apply mb-4;
+}
+
+.prose-content h1 {
+  @apply text-3xl font-bold mt-8 mb-4;
+}
+
+.prose-content h2 {
+  @apply text-2xl font-semibold mt-6 mb-3;
+}
+
+.prose-content h3 {
+  @apply text-xl font-medium mt-4 mb-2;
+}
+
+.prose-content ul,
+.prose-content ol {
+  @apply my-4 pl-6;
+}
+
+.prose-content li {
+  @apply mb-2;
+}
+
+.prose-content blockquote {
+  @apply border-l-4 border-primary pl-4 italic text-muted-foreground my-4;
+}
+
+.prose-content pre {
+  @apply bg-muted p-4 rounded-lg overflow-x-auto my-4;
+}
+
+.prose-content code {
+  @apply bg-muted px-2 py-1 rounded text-sm;
+}

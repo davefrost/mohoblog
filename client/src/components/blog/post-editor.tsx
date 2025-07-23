@@ -124,6 +124,7 @@ export default function PostEditor({ isOpen, onClose, editingPost }: PostEditorP
       
       const response = await fetch('/api/upload', {
         method: 'POST',
+        credentials: 'include',
         body: formData,
       });
       
@@ -290,7 +291,7 @@ export default function PostEditor({ isOpen, onClose, editingPost }: PostEditorP
           <div className="flex items-center space-x-2">
             <Switch
               id="published"
-              checked={form.watch("isPublished")}
+              checked={Boolean(form.watch("isPublished"))}
               onCheckedChange={(checked) => form.setValue("isPublished", checked)}
             />
             <Label htmlFor="published">Publish immediately</Label>
