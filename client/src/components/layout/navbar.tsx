@@ -22,6 +22,7 @@ import {
   LogOut,
   Shield
 } from "lucide-react";
+import logoSvg from "@/assets/logo.svg";
 
 export default function Navbar() {
   const { user, logoutMutation } = useAuth();
@@ -55,8 +56,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <Mountain className="h-8 w-8 text-primary mr-3" />
-            <span className="text-xl font-bold text-primary">Adventures on Wheels</span>
+            <img src={logoSvg} alt="Adventures on Wheels" className="h-10 w-auto text-primary" />
           </Link>
 
           {/* Desktop Navigation */}

@@ -8,6 +8,8 @@ import PostCard from "@/components/blog/post-card";
 import PostEditor from "@/components/blog/post-editor";
 import { useAuth } from "@/hooks/useAuth";
 import type { PostWithAuthor } from "@shared/schema";
+import heroMotorhome from "@/assets/hero-motorhome.svg";
+import campervanCard from "@/assets/campervan-card.svg";
 
 export default function Home() {
   const { user } = useAuth();
@@ -40,16 +42,23 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-96 hero-gradient flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative h-96 flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={heroMotorhome} 
+            alt="Motorhome adventure scene" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">Adventures on Wheels</h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">Adventures on Wheels</h1>
+          <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto drop-shadow-md">
             Following our journey with Derek, our motorhome, sharing the highs, lows, and everything in between
           </p>
           <Button 
             size="lg" 
-            className="bg-accent hover:bg-accent/90 text-white"
+            className="bg-accent hover:bg-accent/90 text-white shadow-lg"
           >
             Start Reading
           </Button>
@@ -99,15 +108,38 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : posts && posts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts?.map((post) => (
+              {posts.map((post) => (
                 <PostCard
                   key={post.id}
                   post={post}
                   onEdit={user?.isAdmin ? handleEditPost : undefined}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto">
+                <img 
+                  src={campervanCard} 
+                  alt="No adventures yet" 
+                  className="w-full h-auto mb-8 rounded-lg shadow-lg"
+                />
+                <h3 className="text-2xl font-bold text-foreground mb-4">No Adventures Yet</h3>
+                <p className="text-muted-foreground mb-6">
+                  We're still getting ready for our first adventure! Check back soon for amazing stories and travel tips.
+                </p>
+                {user?.isAdmin && (
+                  <Button
+                    onClick={() => setIsEditorOpen(true)}
+                    className="bg-accent hover:bg-accent/90"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Write First Post
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 

@@ -1,0 +1,37 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Motorhome/Van silhouette -->
+  <g transform="translate(10, 15)">
+    <!-- Main body -->
+    <rect x="8" y="8" width="32" height="18" rx="2" fill="currentColor"/>
+    <!-- Windshield -->
+    <path d="M8 8 L12 4 L36 4 L40 8 Z" fill="currentColor"/>
+    <!-- Wheels -->
+    <circle cx="16" cy="28" r="4" fill="currentColor"/>
+    <circle cx="32" cy="28" r="4" fill="currentColor"/>
+    <!-- Wheel centers -->
+    <circle cx="16" cy="28" r="2" fill="white"/>
+    <circle cx="32" cy="28" r="2" fill="white"/>
+    <!-- Door -->
+    <rect x="35" y="12" width="1" height="10" fill="white"/>
+    <!-- Windows -->
+    <rect x="10" y="10" width="6" height="4" rx="1" fill="white"/>
+    <rect x="18" y="10" width="6" height="4" rx="1" fill="white"/>
+    <rect x="26" y="10" width="6" height="4" rx="1" fill="white"/>
+    <!-- Side window -->
+    <rect x="34" y="15" width="4" height="3" rx="1" fill="white"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="60" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="currentColor">
+    Adventures
+  </text>
+  <text x="60" y="42" font-family="Arial, sans-serif" font-size="12" font-weight="normal" fill="currentColor" opacity="0.8">
+    on Wheels
+  </text>
+  
+  <!-- Decorative elements -->
+  <g transform="translate(170, 20)">
+    <!-- Mountain silhouette -->
+    <path d="M0 15 L5 5 L10 10 L15 0 L20 15 Z" fill="currentColor" opacity="0.3"/>
+  </g>
+</svg>

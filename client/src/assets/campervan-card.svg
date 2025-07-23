@@ -1,0 +1,49 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="300" fill="#F0F8FF"/>
+  
+  <!-- Ground -->
+  <rect x="0" y="200" width="400" height="100" fill="#90EE90"/>
+  
+  <!-- Campervan -->
+  <g transform="translate(100, 120) scale(4)">
+    <!-- Main body -->
+    <rect x="0" y="10" width="35" height="16" rx="2" fill="#FF6B6B"/>
+    <!-- Windshield -->
+    <path d="M0 10 L4 6 L31 6 L35 10 Z" fill="#87CEEB" opacity="0.8"/>
+    <!-- Wheels -->
+    <circle cx="7" cy="28" r="4" fill="#2F4F4F"/>
+    <circle cx="28" cy="28" r="4" fill="#2F4F4F"/>
+    <!-- Wheel centers -->
+    <circle cx="7" cy="28" r="2" fill="#C0C0C0"/>
+    <circle cx="28" cy="28" r="2" fill="#C0C0C0"/>
+    <!-- Door -->
+    <rect x="30" y="13" width="1" height="10" fill="white"/>
+    <!-- Windows -->
+    <rect x="2" y="12" width="6" height="3" rx="1" fill="#87CEEB" opacity="0.8"/>
+    <rect x="10" y="12" width="6" height="3" rx="1" fill="#87CEEB" opacity="0.8"/>
+    <rect x="18" y="12" width="6" height="3" rx="1" fill="#87CEEB" opacity="0.8"/>
+    <rect x="26" y="12" width="6" height="3" rx="1" fill="#87CEEB" opacity="0.8"/>
+    <!-- Roof rack -->
+    <rect x="5" y="8" width="25" height="1" fill="#A0A0A0"/>
+    <!-- Side stripe -->
+    <rect x="0" y="18" width="35" height="2" fill="white"/>
+  </g>
+  
+  <!-- Trees in background -->
+  <g transform="translate(50, 100)">
+    <rect x="8" y="60" width="3" height="15" fill="#8B4513"/>
+    <circle cx="9.5" cy="60" r="10" fill="#228B22"/>
+  </g>
+  
+  <g transform="translate(320, 90)">
+    <rect x="8" y="70" width="3" height="18" fill="#8B4513"/>
+    <circle cx="9.5" cy="70" r="12" fill="#228B22"/>
+  </g>
+  
+  <!-- Mountains -->
+  <path d="M0 150 L50 100 L100 120 L150 80 L200 110 L250 70 L300 100 L350 60 L400 90 L400 200 L0 200 Z" fill="#B0C4DE" opacity="0.6"/>
+  
+  <!-- Sun -->
+  <circle cx="320" cy="50" r="25" fill="#FFD700" opacity="0.8"/>
+</svg>

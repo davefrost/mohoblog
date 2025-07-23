@@ -2,16 +2,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
+import travelBackground from "@/assets/travel-background.svg";
+import campervanCard from "@/assets/campervan-card.svg";
 
 export default function About() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative h-80 hero-gradient flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/30"></div>
+      <section className="relative h-80 flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={travelBackground} 
+            alt="Travel landscape" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">About Our Journey</h1>
-          <p className="text-xl max-w-2xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">About Our Journey</h1>
+          <p className="text-xl max-w-2xl mx-auto drop-shadow-md">
             The story behind Adventures on Wheels and the people who make it happen
           </p>
         </div>
@@ -40,8 +49,12 @@ export default function About() {
               </div>
             </div>
             <div className="relative">
-              <div className="rounded-xl bg-muted h-96 w-full flex items-center justify-center text-muted-foreground">
-                <p>John, Sarah & Max by their motorhome</p>
+              <div className="rounded-xl overflow-hidden shadow-lg">
+                <img 
+                  src={campervanCard} 
+                  alt="Our motorhome adventure" 
+                  className="w-full h-96 object-cover"
+                />
               </div>
               <div className="absolute -bottom-6 -right-6 bg-accent p-4 rounded-xl shadow-lg">
                 <div className="text-center">
