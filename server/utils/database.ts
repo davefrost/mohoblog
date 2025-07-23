@@ -4,26 +4,26 @@ import { db } from '../db';
 /**
  * Execute raw SQL queries safely
  */
-export async function executeRawQuery(query: string, params: any[] = []) {
-  return await db.execute(sql.raw(query, params));
+export async function executeRawQuery(query: string) {
+  return await db.execute(sql.raw(query));
 }
 
 /**
  * Get database statistics
  */
 export async function getDatabaseStats() {
-  const [userCount] = await db.execute(sql`SELECT COUNT(*) as count FROM users`);
-  const [postCount] = await db.execute(sql`SELECT COUNT(*) as count FROM posts`);
-  const [publishedPostCount] = await db.execute(sql`SELECT COUNT(*) as count FROM posts WHERE is_published = true`);
-  const [commentCount] = await db.execute(sql`SELECT COUNT(*) as count FROM comments`);
-  const [subscriberCount] = await db.execute(sql`SELECT COUNT(*) as count FROM newsletter_subscriptions WHERE is_active = true`);
+  const userCountResult = await db.execute(sql`SELECT COUNT(*) as count FROM users`);
+  const postCountResult = await db.execute(sql`SELECT COUNT(*) as count FROM posts`);
+  const publishedPostCountResult = await db.execute(sql`SELECT COUNT(*) as count FROM posts WHERE is_published = true`);
+  const commentCountResult = await db.execute(sql`SELECT COUNT(*) as count FROM comments`);
+  const subscriberCountResult = await db.execute(sql`SELECT COUNT(*) as count FROM newsletter_subscriptions WHERE is_active = true`);
   
   return {
-    users: userCount.count,
-    posts: postCount.count,
-    publishedPosts: publishedPostCount.count,
-    comments: commentCount.count,
-    subscribers: subscriberCount.count,
+    users: userCountResult.rows[0]?.count || 0,
+    posts: postCountResult.rows[0]?.count || 0,
+    publishedPosts: publishedPostCountResult.rows[0]?.count || 0,
+    comments: commentCountResult.rows[0]?.count || 0,
+    subscribers: subscriberCountResult.rows[0]?.count || 0,
   };
 }
 
@@ -71,21 +71,21 @@ export async function cleanupOldAnalytics(daysToKeep: number = 90) {
  * Get post engagement metrics
  */
 export async function getPostEngagement(postId: number) {
-  const [views] = await db.execute(sql`
+  const viewsResult = await db.execute(sql`
     SELECT COUNT(*) as count 
     FROM analytics 
     WHERE event = 'post_view' AND entity_id = ${postId.toString()}
   `);
   
-  const [comments] = await db.execute(sql`
+  const commentsResult = await db.execute(sql`
     SELECT COUNT(*) as count 
     FROM comments 
     WHERE post_id = ${postId} AND is_approved = true
   `);
   
   return {
-    views: views.count,
-    comments: comments.count,
+    views: viewsResult.rows[0]?.count || 0,
+    comments: commentsResult.rows[0]?.count || 0,
   };
 }
 
@@ -142,7 +142,7 @@ export async function createPerformanceIndexes() {
       await db.execute(sql.raw(indexSql));
       results.push({ query: indexSql, success: true });
     } catch (error) {
-      results.push({ query: indexSql, success: false, error: error.message });
+      results.push({ query: indexSql, success: false, error: (error as Error).message });
     }
   }
   

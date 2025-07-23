@@ -18,7 +18,7 @@ export default function Contact() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const form = useForm<InsertContactSubmission>({
-    resolver: zodResolver(insertContactSubmissionSchema),
+    resolver: zodResolver(insertContactSubmissionSchema as any),
     defaultValues: {
       firstName: "",
       lastName: "",

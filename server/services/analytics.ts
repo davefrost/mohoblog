@@ -70,7 +70,7 @@ export async function trackNewsletterSubscription(req: Request) {
  * Track search
  */
 export async function trackSearch(req: Request, query: string, results: number) {
-  await trackEvent(req, 'search', 'search', null, { query, results });
+  await trackEvent(req, 'search', 'search', undefined, { query, results });
 }
 
 /**

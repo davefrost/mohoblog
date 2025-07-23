@@ -221,28 +221,28 @@ export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterS
 });
 
 // Types
-export type UpsertUser = z.infer<typeof insertUserSchema>;
+export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
-export type InsertPost = z.infer<typeof insertPostSchema>;
+export type InsertPost = typeof posts.$inferInsert;
 export type Post = typeof posts.$inferSelect;
 export type PostWithAuthor = Post & { author: User };
 
-export type InsertContactSubmission = z.infer<typeof insertContactSubmissionSchema>;
+export type InsertContactSubmission = typeof contactSubmissions.$inferInsert;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 
-export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
+export type InsertNewsletterSubscription = typeof newsletterSubscriptions.$inferInsert;
 export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
 
-export type InsertComment = z.infer<typeof insertCommentSchema>;
+export type InsertComment = typeof comments.$inferInsert;
 export type Comment = typeof comments.$inferSelect;
 export type CommentWithAuthor = Comment & { author?: User };
 
-export type InsertTag = z.infer<typeof insertTagSchema>;
+export type InsertTag = typeof tags.$inferInsert;
 export type Tag = typeof tags.$inferSelect;
 export type PostWithTags = Post & { tags: Tag[] };
 
-export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
+export type InsertAnalytics = typeof analytics.$inferInsert;
 export type Analytics = typeof analytics.$inferSelect;
 
 // Categories enum
