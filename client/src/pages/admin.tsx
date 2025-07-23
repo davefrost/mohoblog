@@ -298,15 +298,27 @@ export default function Admin() {
                   <Plus className="h-6 w-6 mb-2" />
                   <span>New Post</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => toast({ title: "Coming Soon", description: "User management will be available in a future update." })}
+                >
                   <Users className="h-6 w-6 mb-2" />
                   <span>Manage Users</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => toast({ title: "Coming Soon", description: "Analytics dashboard will be available soon." })}
+                >
                   <BarChart3 className="h-6 w-6 mb-2" />
                   <span>Analytics</span>
                 </Button>
-                <Button variant="outline" className="h-20 flex flex-col items-center justify-center">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => window.location.href = "/settings"}
+                >
                   <Settings className="h-6 w-6 mb-2" />
                   <span>Settings</span>
                 </Button>

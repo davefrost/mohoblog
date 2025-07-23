@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,22 +26,50 @@ interface PostEditorProps {
 export default function PostEditor({ isOpen, onClose, editingPost }: PostEditorProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [featuredImage, setFeaturedImage] = useState<string | null>(editingPost?.featuredImage || null);
+  const [featuredImage, setFeaturedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<InsertPost>({
-    resolver: zodResolver(insertPostSchema),
     defaultValues: {
-      title: editingPost?.title || "",
-      slug: editingPost?.slug || "",
-      excerpt: editingPost?.excerpt || "",
-      content: editingPost?.content || "",
-      featuredImage: editingPost?.featuredImage || "",
-      category: editingPost?.category || "adventures",
+      title: "",
+      slug: "",
+      excerpt: "",
+      content: "",
+      featuredImage: "",
+      category: "adventures",
       authorId: "",
-      isPublished: editingPost?.isPublished || false,
+      isPublished: false,
     },
   });
+
+  // Reset form when editingPost changes
+  useEffect(() => {
+    if (editingPost) {
+      form.reset({
+        title: editingPost.title || "",
+        slug: editingPost.slug || "",
+        excerpt: editingPost.excerpt || "",
+        content: editingPost.content || "",
+        featuredImage: editingPost.featuredImage || "",
+        category: editingPost.category || "adventures",
+        authorId: editingPost.authorId || "",
+        isPublished: Boolean(editingPost.isPublished),
+      });
+      setFeaturedImage(editingPost.featuredImage || null);
+    } else {
+      form.reset({
+        title: "",
+        slug: "",
+        excerpt: "",
+        content: "",
+        featuredImage: "",
+        category: "adventures",
+        authorId: "",
+        isPublished: false,
+      });
+      setFeaturedImage(null);
+    }
+  }, [editingPost, form]);
 
   const mutation = useMutation({
     mutationFn: async (data: InsertPost) => {
