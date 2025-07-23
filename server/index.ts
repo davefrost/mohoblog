@@ -70,7 +70,7 @@ if (process.env.NODE_ENV !== 'test') {
     const port = 5000;
     const server = await registerRoutes(app);
     server.listen(port, "0.0.0.0", () => {
-      log(`serving on port ${port}`);
+      log(`serving on port ${port} (accessible from any network interface)`);
     });
   })();
 }
