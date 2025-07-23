@@ -69,11 +69,7 @@ if (process.env.NODE_ENV !== 'test') {
     // It is the only port that is not firewalled.
     const port = 5000;
     const server = await registerRoutes(app);
-    server.listen({
-      port,
-      host: "0.0.0.0",
-      reusePort: true,
-    }, () => {
+    server.listen(port, "0.0.0.0", () => {
       log(`serving on port ${port}`);
     });
   })();

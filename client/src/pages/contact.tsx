@@ -110,19 +110,25 @@ export default function Contact() {
                 <h3 className="text-xl font-bold text-foreground mb-4">Follow Our Journey</h3>
                 <div className="flex space-x-4">
                   <a 
-                    href="#" 
+                    href="https://facebook.com/adventuresonwheels" 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-colors"
                   >
                     <Facebook className="h-5 w-5" />
                   </a>
                   <a 
-                    href="#" 
+                    href="https://instagram.com/adventuresonwheels" 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-pink-600 hover:bg-pink-700 text-white p-3 rounded-lg transition-colors"
                   >
                     <Instagram className="h-5 w-5" />
                   </a>
                   <a 
-                    href="#" 
+                    href="https://youtube.com/@adventuresonwheels" 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-lg transition-colors"
                   >
                     <Youtube className="h-5 w-5" />

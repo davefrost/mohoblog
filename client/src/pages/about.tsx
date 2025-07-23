@@ -45,7 +45,12 @@ export default function About() {
                 <Link href="/contact">
                   <Button>Get In Touch</Button>
                 </Link>
-                <Button variant="outline">Follow Our Journey</Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => window.open('https://instagram.com/adventuresonwheels', '_blank')}
+                >
+                  Follow Our Journey
+                </Button>
               </div>
             </div>
             <div className="relative">

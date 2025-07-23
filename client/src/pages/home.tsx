@@ -59,6 +59,10 @@ export default function Home() {
           <Button 
             size="lg" 
             className="bg-accent hover:bg-accent/90 text-white shadow-lg"
+            onClick={() => {
+              const postsSection = document.querySelector('#recent-posts');
+              postsSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
             Start Reading
           </Button>
@@ -72,7 +76,7 @@ export default function Home() {
       />
 
       {/* Featured Posts */}
-      <section className="py-12 bg-muted/30">
+      <section id="recent-posts" className="py-12 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-foreground mb-4">Recent Adventures</h2>
