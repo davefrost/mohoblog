@@ -33,13 +33,16 @@ export default function About() {
             <div>
               <h2 className="text-3xl font-bold text-foreground mb-6">Meet the Adventure Team</h2>
               <p className="text-muted-foreground text-lg mb-6">
-                Hi there! We're John and Sarah, and this is our trusty companion Max. Three years ago, we made the bold decision to sell our house, buy a motorhome, and hit the road full-time.
+                Hey! We're Dave and Gemma, two humans clinging to our sanity and our beloved motorhome—and tagging along is Brooke, our paw-some four-legged navigator 🐾 (she's also our chief crumb inspector and squirrel alarm).
               </p>
               <p className="text-muted-foreground text-lg mb-6">
-                What started as a one-year adventure has turned into a lifestyle we can't imagine giving up. From the stunning national parks to the quirky roadside attractions, we've discovered that home isn't a place—it's wherever we park our wheels.
+                Two years ago, we took the plunge into campervan life, and last year we "leveled up" to a motorhome. Fancy, right? It was all going smoothly… until this year, when our trusty home-on-wheels decided it wanted a midlife crisis. 🤦‍♂️
+              </p>
+              <p className="text-muted-foreground text-lg mb-6">
+                Despite breakdowns, baffling faults, and repair bills that make our toaster look like luxury—our wanderlust still wins. We've roamed CAMC CL sites from salty seaside breezes to sheep-dodging in the countryside. And once we're back rolling, you'll find us chasing scenic views, questionable weather, and hopefully not another surprise mechanical hiccup.
               </p>
               <p className="text-muted-foreground text-lg mb-8">
-                Through this blog, we share our experiences, the lessons we've learned, and the incredible people we've met along the way. Join us as we continue exploring this beautiful country, one mile at a time.
+                We share all the good, bad, and delightfully weird moments on our blog. Come for the travel tips, stay for the tales of "guess what went wrong this week."
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/contact">
@@ -63,8 +66,8 @@ export default function About() {
               </div>
               <div className="absolute -bottom-6 -right-6 bg-accent p-4 rounded-xl shadow-lg">
                 <div className="text-center">
-                  <div className="text-white font-bold text-2xl">50+</div>
-                  <div className="text-white text-sm">States Visited</div>
+                  <div className="text-white font-bold text-2xl">2</div>
+                  <div className="text-white text-sm">Counties Visited</div>
                 </div>
               </div>
             </div>
@@ -74,10 +77,10 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="text-3xl font-bold text-primary mb-2">50+</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">States Visited</h3>
+                <div className="text-3xl font-bold text-primary mb-2">2</div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Counties Visited</h3>
                 <p className="text-muted-foreground">
-                  From coast to coast, we've explored the diverse landscapes of America
+                  Exploring the beautiful and diverse landscapes of the UK countryside
                 </p>
               </CardContent>
             </Card>
