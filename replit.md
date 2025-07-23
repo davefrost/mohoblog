@@ -125,12 +125,41 @@ Adventures on Wheels is a full-stack blog application built for motorhome enthus
 - **Content Management**: Advanced post scheduling and publication workflows
 - **Database Utilities**: Backup, maintenance, and performance monitoring tools
 
+## Automated Testing Framework
+
+### Test Coverage
+- **Unit Tests**: Schema validation, utility functions, data transformations
+- **API Tests**: Authentication, CRUD operations, contact forms, admin features
+- **Integration Tests**: Database operations, cross-component functionality
+- **End-to-End Tests**: Complete user workflows and blog post lifecycle
+
+### Test Infrastructure
+- Jest testing framework with TypeScript support
+- Supertest for API endpoint testing
+- PostgreSQL test database isolation
+- GitHub Actions CI/CD pipeline
+- Coverage reporting with HTML and LCOV formats
+
+### Running Tests
+- `npm test` - Run all tests once
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Generate coverage reports
+- `npm run test:ci` - CI-optimized test run
+
+### CI/CD Pipeline
+- Automated testing on push to main/develop branches
+- Multi-Node.js version testing (18.x, 20.x)
+- PostgreSQL service integration
+- Security audits and dependency checks
+- Build artifact generation
+
 ## Changelog
 
 - July 07, 2025. Initial setup with basic blog functionality
 - July 07, 2025. Enhanced PostgreSQL database with password hashing, analytics, comments, and advanced features
 - July 22, 2025. Fixed authentication system bugs: corrected import paths, React hooks errors, and navbar routing. Local authentication now fully functional.
 - July 23, 2025. Fixed database connection issues for local deployment: replaced Neon serverless driver with standard pg driver to connect to local PostgreSQL instead of trying WebSocket connections on port 443.
+- July 23, 2025. Implemented comprehensive automated testing framework: Added Jest configuration, unit/integration/e2e tests, CI/CD pipeline with GitHub Actions, and testing documentation. Tests cover authentication, blog posts, contact forms, database operations, and complete user workflows.
 
 ## User Preferences
 
