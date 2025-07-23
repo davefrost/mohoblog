@@ -16,7 +16,7 @@ import { insertPostSchema, POST_CATEGORIES } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import type { InsertPost, PostWithAuthor } from "@shared/schema";
-import RichTextEditor from "@/components/ui/rich-text-editor";
+import SimpleRichEditor from "@/components/ui/simple-rich-editor";
 
 interface PostEditorProps {
   isOpen: boolean;
@@ -276,7 +276,7 @@ export default function PostEditor({ isOpen, onClose, editingPost }: PostEditorP
           <div>
             <Label htmlFor="content">Content</Label>
             <div className="mt-1">
-              <RichTextEditor
+              <SimpleRichEditor
                 content={form.watch("content") || ""}
                 onChange={(content) => form.setValue("content", content)}
                 placeholder="Write your adventure story here..."
