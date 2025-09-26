@@ -11,12 +11,12 @@ async function hashPassword(password) {
 
 // Replace 'your_new_password' with the password you want to use
 async function generateHash() {
-  const password = 'your_new_password'; // <-- Change this
+  const password = 'sum2025merA!'; // <-- Change this
   const hash = await hashPassword(password);
   console.log('Password:', password);
   console.log('Hash to store in DB:', hash);
   console.log('\nSQL command to update your password:');
-  console.log(`UPDATE users SET "passwordHash" = '${hash}' WHERE email = 'your_email@example.com';`);
+  console.log(`UPDATE users SET "passwordHash" = '${hash}' WHERE email = 'dave@davefrost.co.uk';`);
 }
 
 generateHash().catch(console.error);
