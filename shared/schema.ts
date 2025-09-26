@@ -130,10 +130,28 @@ export const analytics = pgTable("analytics", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Password reset tokens table
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  token: varchar("token", { length: 255 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  isUsed: boolean("is_used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
   comments: many(comments),
+  passwordResetTokens: many(passwordResetTokens),
+}));
+
+export const passwordResetTokensRelations = relations(passwordResetTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [passwordResetTokens.userId],
+    references: [users.id],
+  }),
 }));
 
 export const postsRelations = relations(posts, ({ one, many }) => ({
@@ -220,6 +238,12 @@ export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterS
   createdAt: true,
 });
 
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  isUsed: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -244,6 +268,9 @@ export type PostWithTags = Post & { tags: Tag[] };
 
 export type InsertAnalytics = typeof analytics.$inferInsert;
 export type Analytics = typeof analytics.$inferSelect;
+
+export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 
 // Categories enum
 export const POST_CATEGORIES = {

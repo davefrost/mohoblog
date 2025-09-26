@@ -12,6 +12,8 @@ import Contact from "@/pages/contact";
 import Admin from "@/pages/admin";
 import Login from "@/pages/login";
 import Settings from "@/pages/settings";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { AdminRoute } from "./components/AdminRoute";
@@ -38,6 +40,8 @@ function Router() {
           <Route path="/about" component={About} />
           <Route path="/contact" component={Contact} />
           <Route path="/login" component={Login} />
+          <Route path="/forgot-password" component={ForgotPassword} />
+          <Route path="/reset-password" component={ResetPassword} />
           <AdminRoute path="/admin" component={Admin} />
           <ProtectedRoute path="/settings" component={Settings} />
           <Route component={NotFound} />

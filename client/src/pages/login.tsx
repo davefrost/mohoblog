@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -214,10 +214,25 @@ export default function Login() {
                   type="submit" 
                   className="w-full" 
                   disabled={loginMutation.isPending}
+                  data-testid="button-sign-in"
                 >
                   {loginMutation.isPending ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
+            )}
+
+            {!isRegistering && (
+              <div className="mt-3 text-center">
+                <Link href="/forgot-password">
+                  <Button 
+                    variant="link" 
+                    className="text-sm text-muted-foreground"
+                    data-testid="link-forgot-password"
+                  >
+                    Forgot your password?
+                  </Button>
+                </Link>
+              </div>
             )}
             
             <div className="mt-4 text-center">

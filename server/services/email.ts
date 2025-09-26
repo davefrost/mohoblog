@@ -60,3 +60,30 @@ export async function sendContactEmail(contactData: InsertContactSubmission) {
     throw error;
   }
 }
+
+export async function sendPasswordResetEmail(email: string, resetToken: string) {
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+  
+  const emailOptions = {
+    from: process.env.FROM_EMAIL || 'noreply@davefrost.co.uk',
+    to: email,
+    subject: 'Password Reset Request - Adventures on Wheels',
+    html: `
+      <h2>Password Reset Request</h2>
+      <p>You have requested to reset your password for Adventures on Wheels.</p>
+      <p>Please click the link below to reset your password:</p>
+      <p><a href="${resetUrl}" style="background-color: #3B82F6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
+      <p>If you did not request this password reset, please ignore this email.</p>
+      <p>This link will expire in 1 hour.</p>
+      <p>Best regards,<br>Adventures on Wheels Team</p>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(emailOptions);
+    console.log('Password reset email sent successfully to:', email);
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw error;
+  }
+}

@@ -2,13 +2,14 @@
 import express from 'express';
 // Auth is now handled in server/auth.ts
 import { body, validationResult } from 'express-validator';
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { sendContactEmail } from "./services/email";
+import { sendContactEmail, sendPasswordResetEmail } from "./services/email";
 import { handleFileUpload } from "./services/upload";
 import { trackEvent, trackPostView, trackContactForm, trackNewsletterSubscription } from "./services/analytics";
 import { insertPostSchema, insertContactSubmissionSchema, insertNewsletterSubscriptionSchema } from "@shared/schema";
+import { generateSecureToken, hashPassword, verifyPassword } from "./utils/auth";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
@@ -465,6 +466,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error changing password:", error);
       res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
+  // Password reset routes
+  app.post('/api/password-reset-request', [
+    body('email').isEmail().withMessage('Please provide a valid email address'),
+  ], async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
+      }
+
+      const { email } = req.body;
+
+      // Check if user exists
+      const users = await storage.getAllUsers();
+      const user = users.find(u => u.email === email);
+      
+      // Always return success to avoid email enumeration attacks
+      if (!user) {
+        return res.json({ message: "If an account with that email exists, you will receive a password reset link." });
+      }
+
+      // Generate reset token (valid for 1 hour)
+      const resetToken = generateSecureToken(32);
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Store token in database
+      await storage.createPasswordResetToken(user.id, resetToken, expiresAt);
+
+      // Send reset email
+      await sendPasswordResetEmail(email, resetToken);
+
+      res.json({ message: "If an account with that email exists, you will receive a password reset link." });
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  app.post('/api/password-reset-verify', [
+    body('token').notEmpty().withMessage('Reset token is required'),
+    body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+  ], async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg });
+      }
+
+      const { token, newPassword } = req.body;
+
+      // Get and validate token
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+
+      // Get user
+      const user = await storage.getUser(resetToken.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Hash new password using the same method as registration
+      const newPasswordHash = await hashPassword(newPassword);
+
+      // Update password
+      const success = await storage.changeUserPassword(user.id, newPasswordHash);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to update password" });
+      }
+
+      // Mark token as used
+      await storage.markPasswordResetTokenAsUsed(token);
+
+      // Clean up expired tokens
+      await storage.cleanupExpiredPasswordResetTokens();
+
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 
