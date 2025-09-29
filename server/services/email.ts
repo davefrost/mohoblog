@@ -6,6 +6,10 @@ const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'localhost',
   port: parseInt(process.env.SMTP_PORT || '25'),
   secure: false,
+  ignoreTLS: true, // Ignore TLS for local postfix
+  tls: {
+    rejectUnauthorized: false // Accept self-signed certificates
+  },
   // No authentication needed for local postfix
   ...(process.env.SMTP_USER && process.env.SMTP_PASS && {
     auth: {
