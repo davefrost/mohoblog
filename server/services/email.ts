@@ -1,15 +1,18 @@
 import nodemailer from 'nodemailer';
 import type { InsertContactSubmission } from '@shared/schema';
 
-// Configure nodemailer transporter
+// Configure nodemailer transporter for local postfix
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
+  host: process.env.SMTP_HOST || 'localhost',
+  port: parseInt(process.env.SMTP_PORT || '25'),
   secure: false,
-  auth: {
-    user: process.env.SMTP_USER || process.env.EMAIL_USER,
-    pass: process.env.SMTP_PASS || process.env.EMAIL_PASS,
-  },
+  // No authentication needed for local postfix
+  ...(process.env.SMTP_USER && process.env.SMTP_PASS && {
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  }),
 });
 
 export async function sendContactEmail(contactData: InsertContactSubmission) {
