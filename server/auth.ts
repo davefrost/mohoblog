@@ -32,6 +32,9 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   // Session configuration
+  const isProduction = process.env.NODE_ENV === 'production';
+  const isReplit = !!process.env.REPLIT_DOMAINS;
+  
   const PostgresSessionStore = connectPg(session);
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET!,
@@ -44,13 +47,17 @@ export function setupAuth(app: Express) {
     }),
     cookie: {
       httpOnly: true,
-      secure: !!process.env.REPLIT_DOMAINS || process.env.NODE_ENV === 'production',
+      secure: isReplit || isProduction,
       sameSite: 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 1 week
     }
   };
 
-  app.set("trust proxy", 1); // Trust first proxy for proper cookie handling
+  // Only trust proxy when behind one (Replit or production)
+  if (isReplit || isProduction) {
+    app.set("trust proxy", 1);
+  }
   app.use(session(sessionSettings));
   app.use(passport.initialize());
   app.use(passport.session());

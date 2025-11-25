@@ -1,0 +1,54 @@
+index-BFHfJ89V.js:353  GET http://192.168.1.41:5000/api/user 401 (Unauthorized)
+queryFn @ index-BFHfJ89V.js:353
+o @ index-BFHfJ89V.js:48
+v @ index-BFHfJ89V.js:48
+start @ index-BFHfJ89V.js:48
+fetch @ index-BFHfJ89V.js:48
+Qc @ index-BFHfJ89V.js:48
+onSubscribe @ index-BFHfJ89V.js:48
+subscribe @ index-BFHfJ89V.js:48
+(anonymous) @ index-BFHfJ89V.js:48
+i4 @ index-BFHfJ89V.js:38
+Qv @ index-BFHfJ89V.js:40
+Dl @ index-BFHfJ89V.js:40
+AO @ index-BFHfJ89V.js:40
+Pa @ index-BFHfJ89V.js:38
+fq @ index-BFHfJ89V.js:40
+La @ index-BFHfJ89V.js:40
+D4 @ index-BFHfJ89V.js:40
+w @ index-BFHfJ89V.js:25
+k @ index-BFHfJ89V.js:25
+login:1 [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) <input type=​"password" class=​"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:​border-0 file:​bg-transparent file:​text-sm file:​font-medium file:​text-foreground placeholder:​text-muted-foreground focus-visible:​outline-none focus-visible:​ring-2 focus-visible:​ring-ring focus-visible:​ring-offset-2 disabled:​cursor-not-allowed disabled:​opacity-50 md:​text-sm mt-1" id=​"password" name=​"password" placeholder=​"password">​flex
+login:1 Access to fetch at 'https://dsnetx.web.app/apps/firelinks/msg.json?ref=ExifClassic-CH-v301&r=0.8023104564592253' from origin 'http://192.168.1.41:5000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+index.js:2  GET https://dsnetx.web.app/apps/firelinks/msg.json?ref=ExifClassic-CH-v301&r=0.8023104564592253 net::ERR_FAILED 509
+C @ index.js:2
+Ae @ index.js:4
+setTimeout
+(anonymous) @ index.js:4
+Promise.finally
+Ce @ index.js:4
+(anonymous) @ content.js:1
+Promise.then
+o @ content.js:1
+(anonymous) @ content.js:1
+index.js:2 error in  TypeError: Failed to fetch
+    at C (index.js:2:3711)
+    at Ae (index.js:4:1861)
+index.js:2 Failed, retrying - 1
+index.js:2  GET https://dsnet.bitbucket.io/apps/ext/msg/msg.json?ref=ExifClassic-CH-v301&r=0.4549787352298389 429 (Too Many Requests)
+C @ index.js:2
+setTimeout
+(anonymous) @ index.js:2
+Promise.catch
+C @ index.js:2
+Ae @ index.js:4
+setTimeout
+(anonymous) @ index.js:4
+Promise.finally
+Ce @ index.js:4
+(anonymous) @ content.js:1
+Promise.then
+o @ content.js:1
+(anonymous) @ content.js:1
+index.js:2 error in  SyntaxError: Unexpected token 'R', "Rate limit"... is not valid JSON
+index.js:2 Failed, retrying - 2
