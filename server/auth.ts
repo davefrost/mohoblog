@@ -36,15 +36,23 @@ export function setupAuth(app: Express) {
   const isReplit = !!process.env.REPLIT_DOMAINS;
   
   const PostgresSessionStore = connectPg(session);
+  
+  const sessionStore = new PostgresSessionStore({ 
+    conString: process.env.DATABASE_URL,
+    createTableIfMissing: true,
+    tableName: "sessions"
+  });
+  
+  // Log session store errors
+  sessionStore.on('error', (error: Error) => {
+    console.error('Session store error:', error);
+  });
+  
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!,
-    resave: false,
+    secret: process.env.SESSION_SECRET || 'fallback-secret-for-dev',
+    resave: true,
     saveUninitialized: false,
-    store: new PostgresSessionStore({ 
-      conString: process.env.DATABASE_URL,
-      createTableIfMissing: false,
-      tableName: "sessions"
-    }),
+    store: sessionStore,
     cookie: {
       httpOnly: true,
       secure: isReplit || isProduction,
