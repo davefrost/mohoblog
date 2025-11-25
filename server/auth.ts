@@ -48,14 +48,16 @@ export function setupAuth(app: Express) {
     console.error('Session store error:', error);
   });
   
+  console.log('Session config - isProduction:', isProduction, 'isReplit:', isReplit);
+  
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || 'fallback-secret-for-dev',
     resave: true,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: sessionStore,
     cookie: {
       httpOnly: true,
-      secure: isReplit || isProduction,
+      secure: false, // Force false for local development debugging
       sameSite: 'lax',
       path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 1 week
