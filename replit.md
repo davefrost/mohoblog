@@ -164,6 +164,7 @@ Adventures on Wheels is a full-stack blog application built for motorhome enthus
 - July 23, 2025. Fixed TypeScript/Zod schema compatibility issues in test pipeline. Resolved type errors by using Drizzle's native $inferInsert/$inferSelect types instead of z.infer with createInsertSchema. Cleaned up deprecated migration files and fixed database utility array destructuring issues.
 - July 23, 2025. Implemented rich text editor for blog posts using custom contentEditable solution instead of TipTap due to build compatibility issues. Added formatting toolbar with bold, italic, underline, headings, lists, quotes, and links. Content is saved as HTML and renders properly in published posts.
 - September 29, 2025. Added complete password reset functionality: database schema for reset tokens, backend API routes (/api/password-reset-request and /api/password-reset-verify), frontend pages (/forgot-password and /reset-password), and email service integration. Configured email service to work with local postfix server on localhost:25 without authentication requirements.
+- November 25, 2025. Fixed session cookie issue: Changed saveUninitialized to true in express-session config to ensure login creates session cookies properly. Cookie secure flag now based only on NODE_ENV=production.
 
 ## User Preferences
 
