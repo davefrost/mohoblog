@@ -153,12 +153,23 @@ export function setupAuth(app: Express) {
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     const user = req.user as SelectUser;
-    res.json({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      isAdmin: user.isAdmin
+    
+    // Explicitly save the session to ensure cookie is set
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Failed to create session' });
+      }
+      
+      console.log('Session saved successfully, session ID:', req.sessionID);
+      
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isAdmin: user.isAdmin
+      });
     });
   });
 
